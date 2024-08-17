@@ -1,0 +1,13 @@
+# Executaveis
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Arquivos binarios
+*.bin
+
+# Pasta de build
+build/
