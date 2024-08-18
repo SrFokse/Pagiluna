@@ -4,7 +4,7 @@
 #include "catalogo.h"
 
 Livro criarLivro() {
-    static int quantidade = 0;
+    static int quantidade = 0; // variavel estatica para gerar chaves unicas
     Livro novoLivro; 
 
     printf("Digite o titulo do livro:\n");
@@ -53,6 +53,7 @@ NoBST *inserirNo(NoBST *raiz, NoBST *novo) {
     return raiz;
 }
 
+// funcao auxiliar para encontrar o menor no da subarvore
 NoBST *encontrarMinimo(NoBST *no) {
     while (no->esquerda != NULL) 
         no = no->esquerda;
@@ -60,10 +61,13 @@ NoBST *encontrarMinimo(NoBST *no) {
 }
 
 NoBST *excluirNo(NoBST *raiz, tipoT excluir) {
-    if(raiz == NULL) return NULL;
-    if(menor(excluir, chave(raiz->item))) raiz->esquerda = excluirNo(raiz->esquerda, excluir);
-    else if(menor(chave(raiz->item), excluir)) raiz->direita = excluirNo(raiz->direita, excluir);
+    if(raiz == NULL) return NULL; // se a arvore estiver vazia, nao ha o que excluir 
+    if(menor(excluir, chave(raiz->item))) 
+        raiz->esquerda = excluirNo(raiz->esquerda, excluir);
+    else if(menor(chave(raiz->item), excluir)) 
+        raiz->direita = excluirNo(raiz->direita, excluir);
     else {
+        // caso o no tenha apenas um ou nenhum filho
         if(raiz->esquerda == NULL) {
             NoBST *temp = raiz->direita;
             free(raiz);
@@ -76,6 +80,7 @@ NoBST *excluirNo(NoBST *raiz, tipoT excluir) {
             return temp;
         }
         
+        // caso o no tenha dois filhos
         NoBST *temp = encontrarMinimo(raiz->direita);
         raiz->item = temp->item;
         raiz->direita = excluirNo(raiz->direita, chave(temp->item));
@@ -83,12 +88,12 @@ NoBST *excluirNo(NoBST *raiz, tipoT excluir) {
     return raiz;
 }
 
-NoBST *buscarBST(NoBST *no, tipoT busca) {
-    if(no == NULL || igual(busca, chave(no->item)))
-        return no;   
+NoBST *buscarBST(NoBST *raiz, tipoT busca) {
+    if(raiz == NULL || igual(busca, chave(raiz->item))) 
+        return raiz;   
     
-    if(menor(busca, chave(no->item))) return buscarBST(no->esquerda, busca);
-    else return buscarBST(no->direita, busca);
+    if(menor(busca, chave(raiz->item))) return buscarBST(raiz->esquerda, busca);
+    else return buscarBST(raiz->direita, busca);
 }
 
 NoBST *editarNo(NoBST *raiz, Livro livroAtualizado) {
