@@ -1,77 +1,61 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include "catalogo.h"
+#include "operacoesArvore.h"
 
-void liberarArvore(NoBST *raiz) {
-    if (raiz != NULL) {
-        liberarArvore(raiz->esquerda); 
-        liberarArvore(raiz->direita);  
-        free(raiz);                
-    }
-}
-
-void imprimirLivro(Livro livro) {
-    printf("Chave: %d\n", livro.chave);
-    printf("Titulo: %s\n", livro.titulo);
-    printf("Autor: %s\n", livro.autor);
-    printf("Genero: %s\n", livro.genero);
-    printf("Editora: %s\n", livro.editora);
-    printf("Ano de Publicacao: %s\n", livro.anoPublicacao);
-    printf("Notas Pessoais: %s\n\n", livro.notasPessoais);
-}
-
-void imprimirArvore(NoBST *raiz) {
-    if (raiz != NULL) {
-        imprimirArvore(raiz->esquerda);
-        imprimirLivro(raiz->item);
-        imprimirArvore(raiz->direita);
-    }
+void limpar_terminal() {
+    #ifdef _WIN32
+        system("cls");
+    #elif __linux__
+        system("clear");
+    #endif
 }
 
 int main() {
-    NoBST *raiz = NULL;
+    int opcao;
+    NoBST *catalogoPessoal = NULL;
 
-    // Cria e insere livros
-    printf("----- Livro 1: -------\n");
-    Livro livro1 = criarLivro();
-    printf("\n----- Livro 2: -------\n");
-    Livro livro2 = criarLivro();
-    printf("\n----- Livro 3: -------\n");
-    Livro livro3 = criarLivro();
+    do {
+        printf("\n--- Menu de Gestao de Livros ---\n");
+        printf("1. Inserir Livro\n");
+        printf("2. Buscar Livro\n");
+        printf("3. Imprimir Catalogo\n");
+        printf("0. Sair\n");
+        printf("Escolha uma opcao: ");
+        scanf("%d", &opcao);
+        getchar();
 
-    raiz = inserirNo(raiz, novoNo(livro1, NULL, NULL));
-    raiz = inserirNo(raiz, novoNo(livro2, NULL, NULL));
-    raiz = inserirNo(raiz, novoNo(livro3, NULL, NULL));
+        switch (opcao) {
+        case 1: {
+            limpar_terminal();
+            Livro novoLivro = criarLivro();
+            NoBST *novo = novoNo(novoLivro, NULL, NULL);
+            catalogoPessoal = inserirNo(catalogoPessoal, novo);
+            break;
+        }
 
-    printf("----- Arvore apos insercao: -------\n");
-    imprimirArvore(raiz);
+        case 2:
+            limpar_terminal();
+            buscarLivro(catalogoPessoal);
+            break;
+        
+        case 3:
+            limpar_terminal();
+            printf("\n--- Catalogo de Livros ---\n");
+            imprimirCatalogo(catalogoPessoal);
+            break;
+        
+        case 0:
+            printf("Saindo...\n");
+            break;
 
-    // Atualiza um livro
-    Livro livroAtualizado = livro1;
-    strcpy(livroAtualizado.titulo, "Titulo Atualizado");
-    strcpy(livroAtualizado.editora, "Editora Atualizada");
-    strcpy(livroAtualizado.notasPessoais, "Notas Atualizadas");
-    raiz = editarNo(raiz, livroAtualizado);
+        default:
+            printf("Opcao invalida!\n");
+        }
 
-    printf("----- Arvore apos edicao: -------\n");
-    imprimirArvore(raiz);
+    } while (opcao != 0);
 
-    // Exclui um livro
-    raiz = excluirNo(raiz, livro2.chave);
+    liberarArvore(catalogoPessoal);
 
-    printf("----- Arvore apos exclusao: -------\n");
-    imprimirArvore(raiz);
-
-    // Busca um livro
-    NoBST *resultado = buscarBST(raiz, livro1.chave);
-    if (resultado != NULL) {
-        printf("Livro encontrado:\n");
-        imprimirLivro(resultado->item);
-    }
-    else printf("Livro com chave %d nao encontrado.\n", livro1.chave);
-
-    liberarArvore(raiz);
-    
-    return 0;
+return 0;
 }
